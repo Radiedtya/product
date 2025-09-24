@@ -2,71 +2,66 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use App\Models\Product;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // menampilkan halaman product
+    public function products(): View
     {
         $products = Product::all();
-
-        return response()->json([
-            'status'  => 200,
-            'success' => true,
-            'message' => 'Products berhasil diambil',
-            'data'=> $products
-        ]);
+        return view('products', compact('products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    // menampilkan form tambah product
+    public function tambah(): View
     {
-        //
+        return view('products-tambah');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // tambah product
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'required|string',
+            'price'       => 'required|numeric',
+            'stock'       => 'required|integer',
+        ]);
+        
+        Product::create($request->only(['name','description','price','stock']));
+        return redirect('/products')->with('success','Product berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Product $product)
+    // menampilkan form ubah product
+    public function edit($id): View
     {
-        //
+        $product = Product::findOrFail($id);
+        return view('products-edit', compact('product'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Product $product)
+    // ubah product
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'required|string',
+            'price'       => 'required|numeric',
+            'stock'       => 'required|integer',
+        ]);
+
+        $product = Product::findOrFail($id);
+        $product->update($request->only(['name','description','price','stock']));
+        return redirect('/products')->with('success','Product berhasil diubah');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Product $product)
+    // hapus product
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Product $product)
-    {
-        //
+        $product = Product::findOrFail($id);
+        $product->delete();
+        return redirect('/products')->with('success','Product berhasil dihapus');
     }
 }
