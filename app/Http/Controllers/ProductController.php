@@ -8,6 +8,17 @@ use App\Models\Product;
 
 class ProductController extends Controller
 {
+
+    public function index() {
+        // $products = Product::all();
+        // return response()->json([
+        //     'status'  => 200,
+        //     'success' => true,
+        //     'massage' => 'Daftar Product berhasil diambil',
+        //     'data'    => $products
+        // ]);
+    }
+
     // menampilkan halaman product
     public function products(): View
     {
